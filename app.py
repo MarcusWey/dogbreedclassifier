@@ -3,6 +3,8 @@ from PIL import Image
 import torch
 from torchvision import transforms, models
 import torch.nn as nn
+import gdown  # Import gdown to download from Google Drive
+import os
 
 # Define the same image transformation used during training
 data_transforms = transforms.Compose([
@@ -11,8 +13,22 @@ data_transforms = transforms.Compose([
     transforms.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])
 ])
 
+# Function to download the model from Google Drive
+def download_model_from_drive():
+    model_file = 'vgg16_best_model_1.pth'
+    
+    # Check if the model file already exists to avoid downloading again
+    if not os.path.exists(model_file):
+        # Google Drive file ID (from the shareable link)
+        file_id = '1--Tbq0QWkXY2yk_5dOIrG35s2L1sOUrz'
+        download_url = f'https://drive.google.com/uc?id={file_id}'
+        gdown.download(download_url, model_file, quiet=False)
+
 # Load the trained model (VGG16 in this case)
 def load_model():
+    # Download the model file from Google Drive if not already present
+    download_model_from_drive()
+    
     model = models.vgg16(pretrained=False)
     
     # Modify the fully connected layer to match your number of classes
@@ -58,5 +74,3 @@ if uploaded_file is not None:
                    'Borzoi', 'Boxer', 'Bugg', 'Bulldog']
     
     st.write(f"Predicted Dog Breed: {class_names[predicted_class]}")
-
-# Run the app using streamlit run filename.py
